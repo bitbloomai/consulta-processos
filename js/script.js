@@ -1,7 +1,112 @@
-// script.js (no GitHub)
+// script.js (VERSÃO ATUALIZADA COM TRADUTOR INTELIGENTE)
 
 // Importa a lista de tribunais do arquivo de dados.
 import { tribunais } from './tribunais.js';
+
+// --- CLASSE INTELIGENTE PARA TRADUZIR DADOS DO PROCESSO ---
+class ProcessoJudicialInterpreter {
+    constructor(dadosBrutos) {
+        this.dados = dadosBrutos;
+        if (!this.dados) {
+            throw new Error("Não foi possível iniciar o interpretador sem dados do processo.");
+        }
+    }
+
+    _traduzirMovimento(movimento) {
+        let descricaoBase = movimento.nome || "";
+        let detalhes = [];
+
+        if (movimento.complementosTabelados && movimento.complementosTabelados.length > 0) {
+            movimento.complementosTabelados.forEach(comp => {
+                detalhes.push(comp.nome);
+            });
+        }
+        
+        let descricaoCompleta = `${descricaoBase}: ${detalhes.join(', ')}`.trim();
+        if (detalhes.length === 0 || descricaoBase === "") {
+            descricaoCompleta = descricaoBase;
+        }
+
+        const traducoes = {
+            "Conclusão: para despacho": "Processo enviado ao juiz para uma decisão simples ou para dar o próximo passo.",
+            "Conclusão: para julgamento": "Processo enviado ao juiz para uma análise profunda e julgamento.",
+            "Conclusão: para sentença": "Processo com o juiz para a decisão final do caso.",
+            "Conclusão": "Processo enviado ao juiz para análise.",
+            "Juntada de Petição": "Um novo documento/pedido foi adicionado ao processo por uma das partes.",
+            "Juntada de Documento": "Novos documentos (provas, comprovantes, etc.) foram adicionados ao processo.",
+            "Expedição de documento: Mandado": "Uma ordem judicial (Mandado) foi emitida para ser cumprida por um oficial de justiça.",
+            "Expedição de documento: Certidão": "Um documento que certifica um fato (ex: passagem de tempo) foi emitido.",
+            "Expedição de documento": "Um documento oficial (como uma intimação ou ofício) foi criado e será enviado.",
+            "Audiência Designada": "Uma audiência foi marcada. As partes serão convocadas para comparecer.",
+            "Disponibilização no Diário da Justiça Eletrônico": "Uma decisão ou despacho foi publicado no Diário Oficial online.",
+            "Decurso de Prazo": "O prazo para uma das partes se manifestar no processo terminou.",
+            "Mandado: entregue ao destinatário": "O oficial de justiça confirmou a entrega da ordem judicial.",
+            "Mandado: não entregue ao destinatário": "O oficial de justiça não conseguiu entregar a ordem judicial ao destinatário.",
+            "Mero expediente": "Ato do juiz sem decisão, apenas para dar andamento ao processo.",
+            "Petição": "Uma das partes apresentou um novo pedido ou documento no processo.",
+            "Distribuição": "O processo foi criado e distribuído para a vara e o juiz responsáveis pelo caso.",
+            "Trânsito em Julgado": "Decisão finalizada. O processo chegou ao fim e não há mais possibilidade de recursos.",
+            "Baixa Definitiva": "O processo foi oficialmente encerrado e arquivado."
+        };
+
+        for (const termo in traducoes) {
+            if (descricaoCompleta.includes(termo)) {
+                return traducoes[termo];
+            }
+        }
+        return descricaoCompleta.charAt(0).toUpperCase() + descricaoCompleta.slice(1);
+    }
+
+    _formatarData(dataString) {
+        if (!dataString) return 'Data não informada';
+        return new Date(dataString).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+    }
+    
+    _formatarValor(valor) {
+        if (valor === undefined || valor === null) return 'Não informado';
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    }
+
+    gerarRelatorioCompleto() {
+        let relatorio = "🔎 **Resumo do seu Processo**\n\n";
+        relatorio += `**Número:** ${this.dados.numeroProcesso}\n`;
+        relatorio += `**Tribunal:** ${this.dados.tribunal || 'N/A'}\n`;
+        relatorio += `**Localização:** ${this.dados.orgaoJulgador?.nome || 'Não informado'}\n`;
+        relatorio += `**Tipo de Ação:** ${this.dados.classe?.nome || 'Não informado'}\n`;
+        const assuntoPrincipal = this.dados.assuntos && this.dados.assuntos.length > 0
+            ? this.dados.assuntos[0].nome
+            : 'Não informado';
+        relatorio += `**Assunto Principal:** ${assuntoPrincipal}\n`;
+        relatorio += `**Data de Início:** ${this._formatarData(this.dados.dataAjuizamento)}\n`;
+        relatorio += `**Valor da Causa:** ${this._formatarValor(this.dados.valorCausa)}\n\n`;
+        relatorio += "👤 **Partes Envolvidas**\n";
+        if (this.dados.polo) {
+            const poloAtivo = this.dados.polo.find(p => p.polo === 'AT');
+            const poloPassivo = this.dados.polo.find(p => p.polo === 'PA');
+            const nomesAtivo = poloAtivo?.partes.map(p => p.pessoa.nome).join(', ') || "Não informado";
+            const nomesPassivo = poloPassivo?.partes.map(p => p.pessoa.nome).join(', ') || "Não informado";
+            relatorio += `- **Quem processa (Autor):** ${nomesAtivo}\n`;
+            relatorio += `- **Quem é processado (Réu):** ${nomesPassivo}\n\n`;
+        } else {
+            relatorio += "As informações sobre as partes não estão disponíveis nesta consulta.\n\n";
+        }
+        relatorio += "⚖️ **Últimos Andamentos (explicados)**\n";
+        const movimentos = this.dados.movimentos || [];
+        movimentos.sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
+        if (movimentos.length > 0) {
+            const ultimosMovimentos = movimentos.slice(0, 4);
+            ultimosMovimentos.forEach(mov => {
+                const dataFormatada = this._formatarData(mov.dataHora);
+                const descricaoTraduzida = this._traduzirMovimento(mov);
+                relatorio += `**Em ${dataFormatada}:**\n${descricaoTraduzida}\n\n`;
+            });
+        } else {
+            relatorio += "Nenhum andamento encontrado para este processo.\n";
+        }
+        relatorio += "_Atenção: Esta é uma interpretação simplificada das informações públicas do seu processo. Para detalhes técnicos, consulte seu advogado._";
+        return relatorio;
+    }
+}
 
 // --- CONFIGURAÇÕES ---
 const config = {
@@ -10,7 +115,6 @@ const config = {
         criminal: '5511999999992',
         previdenciario: '5511999999993'
     }
-    // A chave da API foi removida daqui, pois agora é usada apenas no backend (Glitch).
 };
 
 // --- ELEMENTOS DO DOM ---
@@ -209,14 +313,16 @@ async function fetchProcessData(processNumber, courtAcronym) {
     return result.hits.hits[0]._source;
 }
 
+// --- FUNÇÃO ATUALIZADA PARA EXIBIR OS DADOS TRADUZIDOS ---
 function displayProcessData(data) {
-    const courtText = document.querySelector(`option[value="${userProcessData.court}"]`)?.textContent || userProcessData.court.toUpperCase();
-    const movements = (data.movimentos || []).slice(0, 3).map(mov => 
-        `\n- ${new Date(mov.dataHora).toLocaleDateString('pt-BR')}: ${mov.movimentoNacional?.descricao || mov.descricao}`
-    ).join('');
-    
-    const resultText = `Consulta realizada com sucesso!\n\nProcesso: ${data.numeroProcesso}\nTribunal: ${courtText}\nClasse: ${data.classe?.nome || 'N/A'}\n\nÚltimas Movimentações:${movements || ' Nenhuma encontrada.'}`;
-    addMessage(resultText, 'bot');
+    try {
+        const interpretador = new ProcessoJudicialInterpreter(data);
+        const relatorioFormatado = interpretador.gerarRelatorioCompleto();
+        addMessage(relatorioFormatado, 'bot');
+    } catch (error) {
+        console.error("Erro ao interpretar os dados do processo:", error);
+        addMessage("Não foi possível formatar os dados do processo recebido. Por favor, contate o suporte.", 'bot');
+    }
 }
 
 function initialize() {
