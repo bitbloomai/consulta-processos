@@ -183,19 +183,35 @@ function renderCourtSelect() {
 }
 
 async function fetchProcessData(processNumber, courtAcronym) {
+    // 1. A URL para o seu backend está correta.
     const apiUrl = `https://consultporcess-backend.glitch.me/api/consulta-processo`;
-    const requestBody = { "query": { "match": { "numeroProcesso": processNumber } } };
+
+    // 2. O corpo (body) é simples, contendo apenas os dados que o seu backend precisa.
+    const requestBody = {
+        numeroProcesso: processNumber,
+        courtAcronym: courtAcronym
+    };
+
     const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-            'Authorization': config.datajudApiKey,
+            // 3. NÃO HÁ CABEÇALHO de Autorização! O backend cuidará disso.
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody) // Envia o corpo simples
     });
-    if (!response.ok) throw new Error(`Falha na comunicação com a API.`);
+
+    // O resto da função que trata a resposta pode continuar igual
     const result = await response.json();
-    if (result.hits.total.value === 0) throw new Error('Nenhum processo encontrado.');
+
+    if (!response.ok) {
+        // Usa a mensagem de erro que vem do nosso backend
+        throw new Error(result.message || `Erro no servidor (status: ${response.status})`);
+    }
+
+    if (result.hits.total.value === 0) {
+        throw new Error('Nenhum processo encontrado com este número no tribunal selecionado.');
+    }
     return result.hits.hits[0]._source;
 }
 
