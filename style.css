@@ -1,0 +1,86 @@
+/* Estilo para a fonte principal */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Efeito de transição suave para o modal */
+#chat-modal {
+    transition: opacity 0.3s ease-in-out;
+}
+#chat-window {
+    transition: transform 0.3s ease-in-out;
+}
+
+.modal-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.modal-hidden #chat-window {
+    transform: translateY(20px) scale(0.98);
+}
+
+.modal-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal-visible #chat-window {
+    transform: translateY(0) scale(1);
+}
+
+/* Estilos da Janela de Chat */
+#chat-messages {
+    scroll-behavior: smooth;
+}
+
+.chat-bubble {
+    max-width: 85%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    white-space: pre-wrap; /* Para renderizar as quebras de linha (\n) */
+}
+
+.bot-bubble {
+    background-color: #f3f4f6; /* gray-100 */
+    color: #1f2937; /* gray-800 */
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+}
+
+.user-bubble {
+    background-color: #ccfbf1; /* teal-100 */
+    color: #134e4a; /* teal-900 */
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+}
+
+.chat-options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+    padding-top: 5px;
+}
+
+.chat-option-button {
+    background-color: #fff;
+    border: 1px solid #0d9488; /* teal-600 */
+    color: #0d9488;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.chat-option-button:hover {
+    background-color: #0d9488;
+    color: #fff;
+}
+
+.chat-input-form {
+    display: flex;
+    gap: 10px;
+}

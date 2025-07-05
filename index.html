@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escritório de Advocacia | Início</title>
+    
+    <!-- Dependências Externas -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Ligação para o arquivo de estilo externo -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Cabeçalho -->
+    <header class="bg-white shadow-md">
+        <nav class="container mx-auto px-6 py-4">
+            <h1 class="text-2xl font-bold text-gray-900">Escritório de Advocacia</h1>
+            <p class="text-gray-600">Soluções jurídicas com excelência e dedicação.</p>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-6 py-12">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-bold mb-4">Bem-vindo ao nosso canal de atendimento digital</h2>
+            <p class="text-lg mb-6">Estamos aqui para ajudar. Utilize nosso assistente virtual no canto inferior direito para falar com um de nossos especialistas ou para consultar o andamento do seu processo de forma rápida e segura.</p>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="ph ph-scales text-4xl text-teal-600 mb-2"></i>
+                    <h3 class="text-xl font-bold mb-2">Direito Cível</h3>
+                    <p>Contratos, família, sucessões e responsabilidade civil.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="ph ph-handcuffs text-4xl text-teal-600 mb-2"></i>
+                    <h3 class="text-xl font-bold mb-2">Direito Criminal</h3>
+                    <p>Defesa em todas as instâncias e acompanhamento completo.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <i class="ph ph-briefcase text-4xl text-teal-600 mb-2"></i>
+                    <h3 class="text-xl font-bold mb-2">Direito Previdenciário</h3>
+                    <p>Aposentadorias, pensões e benefícios junto ao INSS.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Botão Flutuante -->
+    <div id="chat-launcher" class="fixed bottom-6 right-6 cursor-pointer z-50">
+        <div class="bg-teal-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-xl hover:bg-teal-700 transition-transform transform hover:scale-110">
+            <i class="ph-fill ph-chats text-4xl"></i>
+        </div>
+    </div>
+
+    <!-- Modal do Chat -->
+    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center sm:justify-end p-0 sm:p-4 z-40 modal-hidden">
+        <!-- Janela do Chat -->
+        <div id="chat-window" class="bg-white rounded-t-lg sm:rounded-lg shadow-2xl w-full max-w-sm h-[85vh] sm:h-[70vh] flex flex-col">
+            <!-- Cabeçalho do Chat -->
+            <div class="flex-shrink-0 flex justify-between items-center p-3 sm:p-4 bg-teal-700 text-white rounded-t-lg">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-1 rounded-full">
+                        <i class="ph ph-scales text-xl text-teal-700"></i>
+                    </div>
+                    <h3 class="text-lg font-bold">Assistente Virtual</h3>
+                </div>
+                <button id="close-modal-button" class="text-white hover:text-gray-200">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Área de Mensagens -->
+            <div id="chat-messages" class="flex-grow p-4 overflow-y-auto flex flex-col space-y-2">
+                <!-- Mensagens serão adicionadas aqui pelo JavaScript -->
+            </div>
+
+            <!-- Área de Input -->
+            <div id="chat-input-container" class="flex-shrink-0 p-3 border-t border-gray-200 bg-white rounded-b-lg">
+                <!-- O conteúdo aqui será controlado pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts do Site (o 'type="module"' é essencial para o import/export funcionar) -->
+    <script type="module" src="./js/script.js"></script>
+</body>
+</html>
