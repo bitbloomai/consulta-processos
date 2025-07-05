@@ -183,7 +183,7 @@ function renderCourtSelect() {
 }
 
 async function fetchProcessData(processNumber, courtAcronym) {
-    const apiUrl = `https://api-publica.datajud.cnj.jus.br/api_publica_${courtAcronym}/_search`;
+    const apiUrl = `https://consultporcess-backend.glitch.me`;
     const requestBody = { "query": { "match": { "numeroProcesso": processNumber } } };
     const response = await fetch(apiUrl, {
         method: 'POST',
