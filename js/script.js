@@ -183,7 +183,7 @@ function renderCourtSelect() {
 }
 
 async function fetchProcessData(processNumber, courtAcronym) {
-    const apiUrl = `https://consultporcess-backend.glitch.me`;
+    const apiUrl = `https://consultporcess-backend.glitch.me/api/consulta-processo`;
     const requestBody = { "query": { "match": { "numeroProcesso": processNumber } } };
     const response = await fetch(apiUrl, {
         method: 'POST',
