@@ -68,43 +68,43 @@ class ProcessoJudicialInterpreter {
     }
 
     gerarRelatorioCompleto() {
-        let relatorio = "🔎 **Resumo do seu Processo**\n\n";
-        relatorio += `**Número:** ${this.dados.numeroProcesso}\n`;
-        relatorio += `**Tribunal:** ${this.dados.tribunal || 'N/A'}\n`;
-        relatorio += `**Localização:** ${this.dados.orgaoJulgador?.nome || 'Não informado'}\n`;
-        relatorio += `**Tipo de Ação:** ${this.dados.classe?.nome || 'Não informado'}\n`;
+        // Título sem negrito
+        let relatorio = "🔎 Resumo do seu Processo\n\n";
+
+        // Seções de dados sem negrito
+        relatorio += `Número: ${this.dados.numeroProcesso}\n`;
+        relatorio += `Tribunal: ${this.dados.tribunal || 'N/A'}\n`;
+        relatorio += `Localização: ${this.dados.orgaoJulgador?.nome || 'Não informado'}\n`;
+        relatorio += `Tipo de Ação: ${this.dados.classe?.nome || 'Não informado'}\n`;
+        
         const assuntoPrincipal = this.dados.assuntos && this.dados.assuntos.length > 0
             ? this.dados.assuntos[0].nome
             : 'Não informado';
-        relatorio += `**Assunto Principal:** ${assuntoPrincipal}\n`;
-        relatorio += `**Data de Início:** ${this._formatarData(this.dados.dataAjuizamento)}\n`;
-        relatorio += `**Valor da Causa:** ${this._formatarValor(this.dados.valorCausa)}\n\n`;
-        relatorio += "👤 **Partes Envolvidas**\n";
-        if (this.dados.polo) {
-            const poloAtivo = this.dados.polo.find(p => p.polo === 'AT');
-            const poloPassivo = this.dados.polo.find(p => p.polo === 'PA');
-            const nomesAtivo = poloAtivo?.partes.map(p => p.pessoa.nome).join(', ') || "Não informado";
-            const nomesPassivo = poloPassivo?.partes.map(p => p.pessoa.nome).join(', ') || "Não informado";
-            relatorio += `- **Quem processa (Autor):** ${nomesAtivo}\n`;
-            relatorio += `- **Quem é processado (Réu):** ${nomesPassivo}\n\n`;
-        } else {
-            relatorio += "As informações sobre as partes não estão disponíveis nesta consulta.\n\n";
-        }
-        relatorio += "⚖️ **Últimos Andamentos (explicados)**\n";
+        relatorio += `Assunto Principal: ${assuntoPrincipal}\n`;
+        relatorio += `Data de Início: ${this._formatarData(this.dados.dataAjuizamento)}\n\n`;
+        
+        // Seções "Valor da Causa" e "Partes Envolvidas" foram removidas.
+
+        // Seção de andamentos sem negrito
+        relatorio += "⚖️ Últimos Andamentos\n";
         const movimentos = this.dados.movimentos || [];
         movimentos.sort((a, b) => new Date(b.dataHora) - new Date(a.dataHora));
+
         if (movimentos.length > 0) {
             const ultimosMovimentos = movimentos.slice(0, 4);
             ultimosMovimentos.forEach(mov => {
                 const dataFormatada = this._formatarData(mov.dataHora);
                 const descricaoTraduzida = this._traduzirMovimento(mov);
-                relatorio += `**Em ${dataFormatada}:**\n${descricaoTraduzida}\n\n`;
+                // Movimentos sem negrito
+                relatorio += `Em ${dataFormatada}:\n${descricaoTraduzida}\n\n`;
             });
         } else {
             relatorio += "Nenhum andamento encontrado para este processo.\n";
         }
-        relatorio += "_Atenção: Esta é uma interpretação simplificada das informações públicas do seu processo. Para detalhes técnicos, consulte seu advogado._";
-        return relatorio;
+        
+        // Frase final sobre consultar advogado foi removida.
+
+        return relatorio.trim(); // .trim() para remover qualquer espaço extra no final
     }
 }
 
